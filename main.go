@@ -2,24 +2,66 @@ package main
 
 import (
 	"fmt"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
+	"math/rand"
+	"strings"
+	"time"
 )
 
-//TIP To run your code, right-click the code and select <b>Run</b>. Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.
+var userList []string
 
-func main() {
-	//TIP Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined or highlighted text
-	// to see how GoLand suggests fixing it.
-	s := "gopher"
-	fmt.Println("Hello and welcome, %s!", s)
-
-	for i := 1; i <= 5; i++ {
-		//TIP You can try debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-		// for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>. To start your debugging session,
-		// right-click your code in the editor and select the <b>Debug</b> option.
-		fmt.Println("i =", 100/i)
-	}
+type lotteryController struct {
+	Ctx iris.Context
 }
 
-//TIP See GoLand help at <a href="https://www.jetbrains.com/help/go/">jetbrains.com/help/go/</a>.
-// Also, you can try interactive lessons for GoLand by selecting 'Help | Learn IDE Features' from the main menu.
+func newApp() *iris.Application {
+	app := iris.New()
+	mvc.New(app.Party("/")).Handle(&lotteryController{})
+	return app
+}
+
+func main() {
+	app := newApp()
+	userList = []string{}
+	app.Run(iris.Addr(":8080"))
+}
+
+func (c *lotteryController) Get() string {
+	count := len(userList)
+	return fmt.Sprintf("当前参与抽奖的用户数: %d\n", count)
+}
+
+// POST http://localhost:8080/import
+// curl --data "users=test1,test2" http://localhost:8080/import
+// params:users
+func (c *lotteryController) PostImport() string {
+	strUsers := c.Ctx.FormValue("users")
+	users := strings.Split(strUsers, ",")
+	count1 := len(userList)
+	for _, u := range users {
+		u = strings.TrimSpace(u)
+		if len(u) > 0 {
+			userList = append(userList, u)
+		}
+	}
+	count2 := len(userList)
+	return fmt.Sprintf("当前总共参与的人数： %d, 成功导入的用户数: %d\n", count2, (count2 - count1))
+}
+
+// GET http://localhost:8080/lucky
+func (c *lotteryController) GetLucky() string {
+	count := len(userList)
+	if count > 1 {
+		seed := time.Now().UnixNano()
+		index := rand.New(rand.NewSource(seed)).Int31n(int32(count))
+		user := userList[index]
+		userList = append(userList[:index], userList[index+1:]...)
+		return fmt.Sprintf("当前中奖用户: %s, 剩余用户数%d\n", user, count-1)
+	} else if count == 1 {
+		user := userList[0]
+		return fmt.Sprintf("当前中奖用户: %s, 剩余用户数%d\n", user, count-1)
+	} else {
+		return fmt.Sprintf("当前已经没有用户，请使用/import导入")
+	}
+}
