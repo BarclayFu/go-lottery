@@ -46,7 +46,7 @@ func (c *lotteryController) PostImport() string {
 		}
 	}
 	count2 := len(userList)
-	return fmt.Sprintf("当前总共参与的人数： %d, 成功导入的用户数: %d\n", count2, (count2 - count1))
+	return fmt.Sprintf("当前总共参与的人数: %d, 成功导入的用户数: %d\n", count2, (count2 - count1))
 }
 
 // GET http://localhost:8080/lucky
