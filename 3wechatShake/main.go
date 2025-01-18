@@ -3,6 +3,8 @@
 微信摇一摇
 基础功能:
 /lucky 只有一个抽奖的接口
+压力测试:
+wrk -t10 -c10 -d5 http://localhost/8080/lucky
 */
 package main
 
@@ -13,6 +15,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -48,13 +51,18 @@ var logger *log.Logger
 
 // 奖品列表
 var giftList []*gift
+var mu sync.Mutex
 
 type lotteryController struct {
 	Ctx iris.Context
 }
 
 func initLog() {
-	f, _ := os.Create("/var/log/wechatShake.log")
+
+	f, err := os.Create("/Users/fusizhe/Documents/GitHub/go-lottery/3wechatShake/demo.log")
+	if err != nil {
+		log.Fatalln(err)
+	}
 	logger = log.New(f, "", log.LstdFlags|log.Lshortfile)
 }
 
@@ -69,10 +77,10 @@ func initGift() {
 		gtype:    giftTypeRealLarge,
 		data:     "",
 		datalist: nil,
-		total:    2,
-		left:     2,
+		total:    20000,
+		left:     20000,
 		inuse:    true,
-		rate:     10,
+		rate:     10000,
 		rateMin:  0,
 		rateMax:  0,
 	}
@@ -87,7 +95,7 @@ func initGift() {
 		datalist: nil,
 		total:    5,
 		left:     5,
-		inuse:    true,
+		inuse:    false,
 		rate:     10,
 		rateMin:  0,
 		rateMax:  0,
@@ -103,7 +111,7 @@ func initGift() {
 		datalist: nil,
 		total:    50,
 		left:     50,
-		inuse:    true,
+		inuse:    false,
 		rate:     500,
 		rateMin:  0,
 		rateMax:  0,
@@ -119,7 +127,7 @@ func initGift() {
 		datalist: []string{"c01", "c02", "c03", "c04", "c05"},
 		total:    10,
 		left:     10,
-		inuse:    true,
+		inuse:    false,
 		rate:     100,
 		rateMin:  0,
 		rateMax:  0,
@@ -135,7 +143,7 @@ func initGift() {
 		datalist: nil,
 		total:    5,
 		left:     5,
-		inuse:    true,
+		inuse:    false,
 		rate:     5000,
 		rateMin:  0,
 		rateMax:  0,
@@ -175,6 +183,7 @@ func main() {
 
 // 奖品数量信息 GET http://localhost:8080
 func (c *lotteryController) Get() string {
+
 	count := 0
 	total := 0
 	for _, data := range giftList {
@@ -188,6 +197,9 @@ func (c *lotteryController) Get() string {
 
 // 抽奖  GET http://localhost:8080/lucky
 func (c *lotteryController) GetLucky() map[string]interface{} {
+	mu.Lock()
+	defer mu.Unlock()
+
 	code := luckyCode()
 	ok := false
 	result := make(map[string]interface{})
@@ -230,7 +242,7 @@ func (c *lotteryController) GetLucky() map[string]interface{} {
 }
 
 func saveLuckyData(code int32, id int, name string, link string, data string, left int) {
-	logger.Printf("lucjy, code=%d, gift=%d, name=%s, link=%s, data=%s, left=%d",
+	logger.Printf("lucky, code=%d, gift=%d, name=%s, link=%s, data=%s, left=%d",
 		code, id, name, link, data, left)
 }
 
