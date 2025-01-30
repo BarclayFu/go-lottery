@@ -1,14 +1,15 @@
-package main
+package _annualMeeting
 
 import (
 	"fmt"
 	"github.com/kataras/iris/v12/httptest"
+	_annualMeeting2 "go-lottery/1annualMeeting"
 	"sync"
 	"testing"
 )
 
 func TestMVC(t *testing.T) {
-	e := httptest.New(t, newApp())
+	e := httptest.New(t, _annualMeeting2.newApp())
 
 	var wg sync.WaitGroup
 
