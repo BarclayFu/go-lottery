@@ -2,6 +2,7 @@ package datasource
 
 import (
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"go-lottery/conf"
 	"log"
 	"sync"
