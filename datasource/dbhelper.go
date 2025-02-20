@@ -7,6 +7,7 @@ import (
 	"sync"
 	"xorm.io/xorm"
 )
+
 var dbLock sync.Mutex
 var masterInstance *xorm.Engine
 
@@ -28,7 +29,7 @@ func NewDbMaster() *xorm.Engine {
 		conf.DbMaster.Pwd,
 		conf.DbMaster.Host,
 		conf.DbMaster.Port,
-		conf.DbMaster.Database
+		conf.DbMaster.Database,
 	)
 
 	instance, err := xorm.NewEngine(conf.DriverName, sourcename)
