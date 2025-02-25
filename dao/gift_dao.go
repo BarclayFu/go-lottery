@@ -6,17 +6,17 @@ import (
 	"xorm.io/xorm"
 )
 
-type GiftDAO struct {
+type GiftDao struct {
 	engine *xorm.Engine
 }
 
-func NewGiftDAO(engine *xorm.Engine) *GiftDAO {
-	return &GiftDAO{
+func NewGiftDao(engine *xorm.Engine) *GiftDao {
+	return &GiftDao{
 		engine: engine,
 	}
 }
 
-func (d *GiftDAO) Get(id uint) *models.LtGift {
+func (d *GiftDao) Get(id uint) *models.LtGift {
 	data := &models.LtGift{Id: id}
 	ok, err := d.engine.Get(data)
 	if ok && err == nil {
@@ -27,7 +27,7 @@ func (d *GiftDAO) Get(id uint) *models.LtGift {
 	}
 }
 
-func (d *GiftDAO) GetAll() []models.LtGift {
+func (d *GiftDao) GetAll() []models.LtGift {
 	dataList := make([]models.LtGift, 0)
 	err := d.engine.
 		Asc("sys_status").
@@ -40,7 +40,7 @@ func (d *GiftDAO) GetAll() []models.LtGift {
 	return dataList
 }
 
-func (d *GiftDAO) CountAll() int64 {
+func (d *GiftDao) CountAll() int64 {
 	count, err := d.engine.Count(&models.LtGift{})
 	if err != nil {
 		return 0
@@ -49,18 +49,18 @@ func (d *GiftDAO) CountAll() int64 {
 	}
 }
 
-func (d *GiftDAO) Delete(id uint) error {
+func (d *GiftDao) Delete(id uint) error {
 	data := &models.LtGift{Id: id, SysStatus: 1}
 	_, err := d.engine.ID(data.Id).Update(data)
 	return err
 }
 
-func (d *GiftDAO) Update(data *models.LtGift, columns []string) error {
+func (d *GiftDao) Update(data *models.LtGift, columns []string) error {
 	_, err := d.engine.ID(data.Id).MustCols(columns...).Update(data)
 	return err
 }
 
-func (d *GiftDAO) Create(data *models.LtGift) error {
+func (d *GiftDao) Create(data *models.LtGift) error {
 	_, err := d.engine.Insert(data)
 	return err
 }

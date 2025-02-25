@@ -6,18 +6,18 @@ import (
 	"xorm.io/xorm"
 )
 
-type CodeDAO struct {
+type CodeDao struct {
 	engine *xorm.Engine
 }
 
-func NewCodeDAO(engine *xorm.Engine) *CodeDAO {
-	return &CodeDAO{
+func NewCodeDao(engine *xorm.Engine) *CodeDao {
+	return &CodeDao{
 		engine: engine,
 	}
 }
 
-func (d *CodeDAO) Get(id uint) *models.LtGift {
-	data := &models.LtGift{Id: id}
+func (d *CodeDao) Get(id uint) *models.LtCode {
+	data := &models.LtCode{Id: id}
 	ok, err := d.engine.Get(data)
 	if ok && err == nil {
 		return data
@@ -27,8 +27,8 @@ func (d *CodeDAO) Get(id uint) *models.LtGift {
 	}
 }
 
-func (d *CodeDAO) GetAll() []models.LtGift {
-	dataList := make([]models.LtGift, 0)
+func (d *CodeDao) GetAll() []models.LtCode {
+	dataList := make([]models.LtCode, 0)
 	err := d.engine.
 		Desc("id").
 		Find(&dataList)
@@ -39,8 +39,8 @@ func (d *CodeDAO) GetAll() []models.LtGift {
 	return dataList
 }
 
-func (d *CodeDAO) CountAll() int64 {
-	count, err := d.engine.Count(&models.LtGift{})
+func (d *CodeDao) CountAll() int64 {
+	count, err := d.engine.Count(&models.LtCode{})
 	if err != nil {
 		return 0
 	} else {
@@ -48,18 +48,18 @@ func (d *CodeDAO) CountAll() int64 {
 	}
 }
 
-func (d *CodeDAO) Delete(id uint) error {
-	data := &models.LtGift{Id: id, SysStatus: 1}
+func (d *CodeDao) Delete(id uint) error {
+	data := &models.LtCode{Id: id, SysStatus: 1}
 	_, err := d.engine.ID(data.Id).Update(data)
 	return err
 }
 
-func (d *CodeDAO) Update(data *models.LtGift, columns []string) error {
+func (d *CodeDao) Update(data *models.LtCode, columns []string) error {
 	_, err := d.engine.ID(data.Id).MustCols(columns...).Update(data)
 	return err
 }
 
-func (d *CodeDAO) Create(data *models.LtGift) error {
+func (d *CodeDao) Create(data *models.LtCode) error {
 	_, err := d.engine.Insert(data)
 	return err
 }
