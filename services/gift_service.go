@@ -15,12 +15,12 @@ type GiftService interface {
 }
 
 type giftService struct {
-	dao *dao.GiftDAO
+	dao *dao.GiftDao
 }
 
 func NewGiftService() GiftService {
 	return &giftService{
-		dao: dao.NewGiftDAO(nil),
+		dao: dao.NewGiftDao(nil),
 	}
 }
 
