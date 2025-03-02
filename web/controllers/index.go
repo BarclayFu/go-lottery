@@ -17,9 +17,9 @@ type IndexController struct {
 }
 
 // http://localhost:8080
-func (c *IndexController) Get() string {
-	c.Ctx.Header("Content-Type", "text/html")
-	return "Welcome to go-lottery!,<a herf='/public/index.html'>开始抽奖</a>"
+func (c *IndexController) Get() {
+	c.Ctx.Header("Content-Type", "text/html; charset=utf-8")
+	c.Ctx.HTML("<html><body>Welcome to go-lottery!,<a href='/public/index.html'>开始抽奖</a></body></html>")
 }
 
 func (c *IndexController) GetGifts() map[string]interface{} {

@@ -3,7 +3,6 @@ package services
 import (
 	"go-lottery/dao"
 	"go-lottery/models"
-	"xorm.io/xorm"
 )
 
 type UserdayService interface {
@@ -21,9 +20,9 @@ type userdayService struct {
 	dao *dao.UserdayDao
 }
 
-func NewUserdayService(engine *xorm.Engine) UserdayService {
+func NewUserdayService() UserdayService {
 	return &userdayService{
-		dao: dao.NewUserdayDao(engine),
+		dao: dao.NewUserdayDao(nil),
 	}
 }
 
