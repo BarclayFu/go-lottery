@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/kataras/iris/v12/_examples/mvc/login/web/middleware"
 	"github.com/kataras/iris/v12/mvc"
 	"go-lottery/bootstrap"
 	"go-lottery/services"
@@ -18,4 +19,9 @@ func Configure(b *bootstrap.Bootstrapper) {
 	index := mvc.New(b.Party("/"))
 	index.Register(userService, userdayService, giftService, codeService, resultService, blackipService)
 	index.Handle(new(controllers.IndexController))
+
+	admin := mvc.New(b.Party("/admin"))
+	admin.Router.Use(middleware.BasicAuth)
+	admin.Register(userService, userdayService, giftService, codeService, resultService, blackipService)
+	admin.Handle(new(controllers.AdminController))
 }
